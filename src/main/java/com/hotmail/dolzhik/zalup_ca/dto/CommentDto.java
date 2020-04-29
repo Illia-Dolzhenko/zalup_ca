@@ -10,6 +10,6 @@ public class CommentDto {
     @NotNull(message = "Post id cannot be empty.")
     private Integer postId;
     @NotNull(message = "Text cannot be empty.")
-    @Size(min = 10, max = 256, message = "Text must not be bigger than 256 characters.")
+    @Size(min = 8, max = 256, message = "Text must not be bigger than 256 characters.")
     private String text;
 }

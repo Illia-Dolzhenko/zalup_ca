@@ -1,5 +1,6 @@
 package com.hotmail.dolzhik.zalup_ca.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,12 +9,16 @@ import javax.persistence.*;
 @Entity
 public class Rating {
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private User user;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Post post;
-    private Float score;
-    private String type;
+    private Integer score;
+    @Enumerated(EnumType.STRING)
+    private RateCategory category;
 }

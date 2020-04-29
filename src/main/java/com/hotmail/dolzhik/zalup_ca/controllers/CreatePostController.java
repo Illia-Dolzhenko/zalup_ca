@@ -32,24 +32,18 @@ public class CreatePostController {
     }
 
     @PostMapping(value = "/createPost")
-    ResponseEntity createPost(@Valid @RequestBody CreatePostDto createPostDto, Principal principal){
+    ResponseEntity createPost(@Valid @RequestBody CreatePostDto createPostDto, Principal principal) {
         User user = userService.findByLogin(principal.getName());
-        Post post = postService.findPostByUserId(user.getId());
+        Post post = new Post();
+        post.setUser(user);
+        post.setImage(createPostDto.getImage());
+        post.setTimeToLive(createPostDto.getTimeToLive());
+        post.setCreationDate(new Timestamp(new Date().getTime()));
+        post = postService.createPost(post);
 
-        if(post==null) {
-            post = new Post();
-            post.setUser(user);
-            post.setImage(createPostDto.getImage());
-            post.setTimeToLive(createPostDto.getTimeToLive());
-            post.setCreationDate(new Timestamp(new Date().getTime()));
-            post = postService.createPost(post);
-            return new ResponseEntity<>(post,HttpStatus.OK);
-        }
-
-
-        Map<Object,Object> map = new HashMap<>();
-        map.put("Message","User post already exists");
-        return new ResponseEntity<>(map,HttpStatus.OK);
+        Map<Object, Object> map = new HashMap<>();
+        map.put("Message", "Post has been added.");
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
 }

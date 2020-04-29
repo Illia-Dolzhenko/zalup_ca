@@ -8,6 +8,7 @@ import com.hotmail.dolzhik.zalup_ca.repositories.RatingRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,13 +26,15 @@ public class TestController {
     private RatingRepository ratingRepository;
 
 
-    @GetMapping("/test")
-    public String test(){
+    @GetMapping("/admin/removePost/{id}")
+    public String test(@PathVariable(name = "id") Integer postId){
 
-        User user = userRepository.findById(12).orElse(null);
-        StringBuilder stringBuilder = new StringBuilder();
-        user.getRoles().forEach(role -> stringBuilder.append(role.getName()));
-        return stringBuilder.toString();
+        Post post = postRepository.findById(postId).orElse(null);
 
+        if(post!=null){
+            postRepository.delete(post);
+        }
+
+        return "done";
     }
 }
