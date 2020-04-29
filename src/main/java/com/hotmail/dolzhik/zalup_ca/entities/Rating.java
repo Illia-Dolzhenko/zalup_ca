@@ -13,10 +13,10 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Post post;
     private Integer score;
     @Enumerated(EnumType.STRING)

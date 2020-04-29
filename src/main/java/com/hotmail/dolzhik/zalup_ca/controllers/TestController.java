@@ -1,8 +1,10 @@
 package com.hotmail.dolzhik.zalup_ca.controllers;
 
+import com.hotmail.dolzhik.zalup_ca.entities.Comment;
 import com.hotmail.dolzhik.zalup_ca.entities.Post;
 import com.hotmail.dolzhik.zalup_ca.entities.Rating;
 import com.hotmail.dolzhik.zalup_ca.entities.User;
+import com.hotmail.dolzhik.zalup_ca.repositories.CommentRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.PostRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.RatingRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.UserRepository;
@@ -24,6 +26,8 @@ public class TestController {
     private PostRepository postRepository;
     @Autowired
     private RatingRepository ratingRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
 
     @GetMapping("/admin/removePost/{id}")
@@ -32,9 +36,17 @@ public class TestController {
         Post post = postRepository.findById(postId).orElse(null);
 
         if(post!=null){
+//            post.getComments().forEach(comment -> {
+//                System.out.println("Comment: " + comment.getText());
+//                commentRepository.delete(comment);
+//            });
+//            post.getRatings().forEach(rating -> {
+//                ratingRepository.delete(rating);
+//            });
             postRepository.delete(post);
+            return "post deleted";
         }
 
-        return "done";
+        return "error";
     }
 }
