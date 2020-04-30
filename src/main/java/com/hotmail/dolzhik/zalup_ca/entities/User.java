@@ -20,6 +20,7 @@ public class User {
     private String password;
     private Integer points;
     @CreatedDate
+    @JsonIgnore
     private Date created;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

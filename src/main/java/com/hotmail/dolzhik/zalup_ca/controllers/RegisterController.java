@@ -1,6 +1,7 @@
 package com.hotmail.dolzhik.zalup_ca.controllers;
 
 import com.hotmail.dolzhik.zalup_ca.dto.RegisterRequestDto;
+import com.hotmail.dolzhik.zalup_ca.dto.ZalupcaResponse;
 import com.hotmail.dolzhik.zalup_ca.entities.Role;
 import com.hotmail.dolzhik.zalup_ca.entities.User;
 import com.hotmail.dolzhik.zalup_ca.repositories.RoleRepository;
@@ -39,9 +40,9 @@ public class RegisterController {
             user.setPoints(100);
             user.setCreated(new Date(new java.util.Date().getTime()));
             userService.register(user);
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(new ZalupcaResponse("User successfully registered."),HttpStatus.OK);
         }
-        return new ResponseEntity(HttpStatus.EXPECTATION_FAILED);
+        return new ResponseEntity<>(new ZalupcaResponse("User cannot be registered."),HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -39,6 +39,7 @@ public class CreatePostController {
         post.setImage(createPostDto.getImage());
         post.setTimeToLive(createPostDto.getTimeToLive());
         post.setCreationDate(new Timestamp(new Date().getTime()));
+        post.setText(createPostDto.getText());
         post = postService.createPost(post);
 
         Map<Object, Object> map = new HashMap<>();

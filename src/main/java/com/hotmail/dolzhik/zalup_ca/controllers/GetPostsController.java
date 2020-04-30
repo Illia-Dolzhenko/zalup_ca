@@ -27,7 +27,7 @@ public class GetPostsController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @GetMapping(value = "getPost/{id}")
+    @GetMapping(value = "/getPost/{id}")
     ResponseEntity getPost(@PathVariable(name = "id") Integer id) {
         Post post = postService.findPostById(id);
         if (post != null) {
