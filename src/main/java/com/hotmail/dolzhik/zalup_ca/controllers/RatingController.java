@@ -1,6 +1,7 @@
 package com.hotmail.dolzhik.zalup_ca.controllers;
 
 import com.hotmail.dolzhik.zalup_ca.dto.RatingDto;
+import com.hotmail.dolzhik.zalup_ca.dto.ZalupcaResponse;
 import com.hotmail.dolzhik.zalup_ca.entities.Post;
 import com.hotmail.dolzhik.zalup_ca.entities.RateCategory;
 import com.hotmail.dolzhik.zalup_ca.entities.Rating;
@@ -40,7 +41,7 @@ public class RatingController {
     ResponseEntity addRating(@RequestBody @Valid RatingDto ratingDto, Principal principal) {
         User user = userService.findByLogin(principal.getName());
         Post post = postService.findPostById(ratingDto.getPostId());
-        Map<Object, Object> response = new HashMap<>();
+
         if (post != null) {
             Rating rating = ratingService.getRatingByUserAndPostId(user.getId(), post.getId());
             if (rating == null || !rating.getCategory().name().equals(ratingDto.getCategory())) {
@@ -51,19 +52,15 @@ public class RatingController {
                 try {
                     rating.setCategory(RateCategory.valueOf(ratingDto.getCategory()));
                 }catch (IllegalArgumentException e){
-                    response.put("message", "Category does not exist.");
-                    return new ResponseEntity<>(response, HttpStatus.OK);
+                    return new ResponseEntity<>(new ZalupcaResponse("Category does not exist."), HttpStatus.OK);
                 }
                 ratingService.addRating(rating);
-                response.put("message", "Rating added.");
-                return new ResponseEntity<>(response, HttpStatus.OK);
+                return new ResponseEntity<>(new ZalupcaResponse("Rating added."), HttpStatus.OK);
             }else {
-                response.put("message", "Rating already exists.");
-                return new ResponseEntity<>(response, HttpStatus.OK);
+                return new ResponseEntity<>(new ZalupcaResponse("Rating already exists."), HttpStatus.OK);
             }
         }
 
-        response.put("message", "Post does not exist.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new ZalupcaResponse("Post does not exist."), HttpStatus.OK);
     }
 }
