@@ -6,6 +6,8 @@ import com.hotmail.dolzhik.zalup_ca.services.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RatingServiceImpl implements RatingService {
 
@@ -23,7 +25,7 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public Rating getRatingByUserAndPostId(Integer userId, Integer postId) {
-        return ratingRepository.findRatingByUserIdAndPostId(userId,postId);
+    public List<Rating> getRatingsByUserAndPostId(Integer userId, Integer postId) {
+        return ratingRepository.findRatingsByUserIdAndPostId(userId,postId);
     }
 }

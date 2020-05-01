@@ -12,15 +12,16 @@ import com.hotmail.dolzhik.zalup_ca.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class RatingController {
@@ -43,9 +44,9 @@ public class RatingController {
         Post post = postService.findPostById(ratingDto.getPostId());
 
         if (post != null) {
-            Rating rating = ratingService.getRatingByUserAndPostId(user.getId(), post.getId());
-            if (rating == null || !rating.getCategory().name().equals(ratingDto.getCategory())) {
-                rating = new Rating();
+            List<Rating> ratings = ratingService.getRatingsByUserAndPostId(user.getId(), post.getId());
+            if (ratings.size() == 0 || !hasRatingInCategory(ratings,ratingDto.getCategory())) {
+                Rating rating = new Rating();
                 rating.setScore(ratingDto.getScore());
                 rating.setUser(user);
                 rating.setPost(post);
@@ -62,5 +63,21 @@ public class RatingController {
         }
 
         return new ResponseEntity<>(new ZalupcaResponse("Post does not exist."), HttpStatus.OK);
+    }
+
+    private boolean hasRatingInCategory(List<Rating> ratings, String category){
+        for(Rating rating : ratings){
+            if (rating.getCategory().name().equals(category)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @GetMapping(value = "/categories")
+    ResponseEntity getCategories(){
+        List<String> categories;
+        categories = Arrays.stream(RateCategory.values()).map(Enum::name).collect(Collectors.toList());
+        return new ResponseEntity<>(categories,HttpStatus.OK);
     }
 }

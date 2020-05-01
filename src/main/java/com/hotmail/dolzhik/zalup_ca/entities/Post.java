@@ -56,7 +56,7 @@ public class Post {
         });
 
         numOfRatings.keySet().forEach(rateCategory -> {
-            averageRatings.put(rateCategory, (float) (sumOfRatings.get(rateCategory) / numOfRatings.get(rateCategory)));
+            averageRatings.put(rateCategory, (float) sumOfRatings.get(rateCategory) / (float) numOfRatings.get(rateCategory));
         });
 
     }
