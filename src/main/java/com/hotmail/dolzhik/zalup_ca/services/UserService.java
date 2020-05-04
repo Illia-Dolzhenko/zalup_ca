@@ -10,4 +10,5 @@ public interface UserService {
     User findByLogin(String login);
     User findById(Integer id);
     List<User> findAll();
+    void changePoints(User user, int amount);
 }

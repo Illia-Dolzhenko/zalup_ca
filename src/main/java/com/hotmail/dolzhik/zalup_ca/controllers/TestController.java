@@ -9,10 +9,7 @@ import com.hotmail.dolzhik.zalup_ca.repositories.PostRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.RatingRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -30,19 +27,12 @@ public class TestController {
     private CommentRepository commentRepository;
 
 
-    @GetMapping("/admin/removePost/{id}")
+    @PostMapping("/admin/removePost/{id}")
     public String test(@PathVariable(name = "id") Integer postId){
 
         Post post = postRepository.findById(postId).orElse(null);
 
         if(post!=null){
-//            post.getComments().forEach(comment -> {
-//                System.out.println("Comment: " + comment.getText());
-//                commentRepository.delete(comment);
-//            });
-//            post.getRatings().forEach(rating -> {
-//                ratingRepository.delete(rating);
-//            });
             postRepository.delete(post);
             return "post deleted";
         }

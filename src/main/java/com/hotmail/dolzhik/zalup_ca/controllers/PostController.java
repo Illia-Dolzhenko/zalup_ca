@@ -1,10 +1,12 @@
 package com.hotmail.dolzhik.zalup_ca.controllers;
 
 import com.hotmail.dolzhik.zalup_ca.dto.CreatePostDto;
+import com.hotmail.dolzhik.zalup_ca.dto.ZalupcaResponse;
 import com.hotmail.dolzhik.zalup_ca.entities.Post;
 import com.hotmail.dolzhik.zalup_ca.entities.User;
 import com.hotmail.dolzhik.zalup_ca.services.PostService;
 import com.hotmail.dolzhik.zalup_ca.services.UserService;
+import com.hotmail.dolzhik.zalup_ca.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +16,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class PostController {
@@ -33,17 +33,19 @@ public class PostController {
     @PostMapping(value = "/createPost")
     ResponseEntity createPost(@Valid @RequestBody CreatePostDto createPostDto, Principal principal) {
         User user = userService.findByLogin(principal.getName());
-        Post post = new Post();
-        post.setUser(user);
-        post.setImage(createPostDto.getImage());
-        post.setTimeToLive(createPostDto.getTimeToLive());
-        post.setCreationDate(new Timestamp(new Date().getTime()));
-        post.setText(createPostDto.getText());
-        post = postService.createPost(post);
 
-        Map<Object, Object> map = new HashMap<>();
-        map.put("Message", "Post has been added.");
-        return new ResponseEntity<>(map, HttpStatus.OK);
+        if (user.getPoints() >= Constants.POST_COST) {
+            Post post = new Post();
+            post.setUser(user);
+            post.setImage(createPostDto.getImage());
+            post.setTimeToLive(createPostDto.getTimeToLive());
+            post.setCreationDate(new Timestamp(new Date().getTime()));
+            post.setText(createPostDto.getText());
+            postService.createPost(post);
+            userService.changePoints(user,-Constants.POST_COST);
+            return new ResponseEntity<>(new ZalupcaResponse("Post has been added."), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new ZalupcaResponse("You dont have enough points to create a post."), HttpStatus.OK);
     }
 
     @GetMapping(value = "/getPosts", produces = "application/json")
@@ -56,11 +58,9 @@ public class PostController {
     ResponseEntity getPost(@PathVariable(name = "id") Integer id) {
         Post post = postService.findPostById(id);
         if (post != null) {
-            return new ResponseEntity<>(post,HttpStatus.OK);
+            return new ResponseEntity<>(post, HttpStatus.OK);
         }
-        Map<Object,Object> response = new HashMap<>();
-        response.put("message","Post with id: " + id + " does not exist.");
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(new ZalupcaResponse("Post with id: " + id + " does not exist."), HttpStatus.NOT_FOUND);
     }
 
 }

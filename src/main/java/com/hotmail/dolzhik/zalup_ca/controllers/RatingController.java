@@ -9,6 +9,7 @@ import com.hotmail.dolzhik.zalup_ca.entities.User;
 import com.hotmail.dolzhik.zalup_ca.services.PostService;
 import com.hotmail.dolzhik.zalup_ca.services.RatingService;
 import com.hotmail.dolzhik.zalup_ca.services.UserService;
+import com.hotmail.dolzhik.zalup_ca.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

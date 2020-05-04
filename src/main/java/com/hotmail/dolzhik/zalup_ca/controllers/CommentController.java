@@ -10,6 +10,7 @@ import com.hotmail.dolzhik.zalup_ca.services.CommentService;
 import com.hotmail.dolzhik.zalup_ca.services.PostService;
 import com.hotmail.dolzhik.zalup_ca.services.UserService;
 import com.hotmail.dolzhik.zalup_ca.services.VoteService;
+import com.hotmail.dolzhik.zalup_ca.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Configuration;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.sql.Timestamp;
@@ -62,11 +64,14 @@ public class CommentController {
         User user = userService.findByLogin(principal.getName());
         Comment comment = commentService.getCommentById(commentId);
 
-        if (comment != null && !voteService.isCommentUpVotedByUser(user.getId(),comment.getId())) {
+        if (comment != null
+                && !user.getId().equals(comment.getUser().getId())
+                && !voteService.isCommentUpVotedByUser(user.getId(),comment.getId())) {
             CommentUpVote vote = new CommentUpVote();
             vote.setUser(user);
             vote.setComment(comment);
             voteService.addVote(vote);
+            userService.changePoints(user, Constants.UP_VOTE_COST);
             return new ResponseEntity<>(new ZalupcaResponse("UpVote added."),HttpStatus.OK);
         }
 

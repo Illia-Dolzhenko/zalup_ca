@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,11 @@ public class UserController {
     @GetMapping(value = "/admin/users")
     ResponseEntity getUsers(){
         return new ResponseEntity<>(userService.findAll(),HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user")
+    ResponseEntity getCurrentUser(Principal principal){
+        return new ResponseEntity<>(userService.findByLogin(principal.getName()),HttpStatus.OK);
     }
 
 }

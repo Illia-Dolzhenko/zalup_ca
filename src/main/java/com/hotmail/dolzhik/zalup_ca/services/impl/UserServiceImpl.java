@@ -6,14 +6,17 @@ import com.hotmail.dolzhik.zalup_ca.repositories.RoleRepository;
 import com.hotmail.dolzhik.zalup_ca.repositories.UserRepository;
 import com.hotmail.dolzhik.zalup_ca.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -55,4 +58,10 @@ public class UserServiceImpl implements UserService {
         userRepository.findAll().forEach(users::add);
         return users;
     }
+
+    @Override
+    public void changePoints(User user, int amount) {
+        userRepository.changeScore(user.getId(), amount);
+    }
+
 }
