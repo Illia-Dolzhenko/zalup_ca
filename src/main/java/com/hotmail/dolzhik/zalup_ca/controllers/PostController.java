@@ -41,9 +41,9 @@ public class PostController {
             post.setTimeToLive(createPostDto.getTimeToLive());
             post.setCreationDate(new Timestamp(new Date().getTime()));
             post.setText(createPostDto.getText());
-            postService.createPost(post);
+            post = postService.createPost(post);
             userService.changePoints(user,-Constants.POST_COST);
-            return new ResponseEntity<>(new ZalupcaResponse("Post has been added."), HttpStatus.OK);
+            return new ResponseEntity<>(post, HttpStatus.OK);
         }
         return new ResponseEntity<>(new ZalupcaResponse("You dont have enough points to create a post."), HttpStatus.OK);
     }
