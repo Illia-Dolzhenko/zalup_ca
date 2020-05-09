@@ -4,6 +4,7 @@ import com.hotmail.dolzhik.zalup_ca.dto.CreatePostDto;
 import com.hotmail.dolzhik.zalup_ca.dto.ZalupcaResponse;
 import com.hotmail.dolzhik.zalup_ca.entities.Post;
 import com.hotmail.dolzhik.zalup_ca.entities.User;
+import com.hotmail.dolzhik.zalup_ca.services.ICaptchaService;
 import com.hotmail.dolzhik.zalup_ca.services.PostService;
 import com.hotmail.dolzhik.zalup_ca.services.UserService;
 import com.hotmail.dolzhik.zalup_ca.util.Constants;
@@ -23,29 +24,33 @@ public class PostController {
 
     private final UserService userService;
     private final PostService postService;
+    private final ICaptchaService captchaService;
 
     @Autowired
-    public PostController(UserService userService, PostService postService) {
+    public PostController(UserService userService, PostService postService, ICaptchaService captchaService) {
         this.userService = userService;
         this.postService = postService;
+        this.captchaService = captchaService;
     }
 
     @PostMapping(value = "/createPost")
     ResponseEntity createPost(@Valid @RequestBody CreatePostDto createPostDto, Principal principal) {
-        User user = userService.findByLogin(principal.getName());
-
-        if (user.getPoints() >= Constants.POST_COST) {
-            Post post = new Post();
-            post.setUser(user);
-            post.setImage(createPostDto.getImage());
-            post.setTimeToLive(createPostDto.getTimeToLive());
-            post.setCreationDate(new Timestamp(new Date().getTime()));
-            post.setText(createPostDto.getText());
-            post = postService.createPost(post);
-            userService.changePoints(user,-Constants.POST_COST);
-            return new ResponseEntity<>(post, HttpStatus.OK);
+        if(captchaService.isValid(createPostDto.getToken(),"createPost")) {
+            User user = userService.findByLogin(principal.getName());
+            if (user.getPoints() >= Constants.POST_COST) {
+                Post post = new Post();
+                post.setUser(user);
+                post.setImage(createPostDto.getImage());
+                post.setTimeToLive(createPostDto.getTimeToLive());
+                post.setCreationDate(new Timestamp(new Date().getTime()));
+                post.setText(createPostDto.getText());
+                post = postService.createPost(post);
+                userService.changePoints(user, -Constants.POST_COST);
+                return new ResponseEntity<>(post, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new ZalupcaResponse("You dont have enough points to create a post."), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new ZalupcaResponse("You dont have enough points to create a post."), HttpStatus.OK);
+        return new ResponseEntity<>(new ZalupcaResponse("Captcha is invalid."), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping(value = "/getPosts", produces = "application/json")

@@ -1,13 +1,16 @@
 package com.hotmail.dolzhik.zalup_ca.dto;
 
+import com.hotmail.dolzhik.zalup_ca.dto.request.CaptchaToken;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class CreatePostDto {
+public class CreatePostDto extends CaptchaToken {
     @NotNull(message = "Image link cannot be empty.")
     private String image;
     @NotNull(message = "Destruction time cannot be empty.")

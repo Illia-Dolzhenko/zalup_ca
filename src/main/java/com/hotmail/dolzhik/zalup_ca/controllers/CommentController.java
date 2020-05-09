@@ -6,10 +6,7 @@ import com.hotmail.dolzhik.zalup_ca.entities.Comment;
 import com.hotmail.dolzhik.zalup_ca.entities.CommentUpVote;
 import com.hotmail.dolzhik.zalup_ca.entities.Post;
 import com.hotmail.dolzhik.zalup_ca.entities.User;
-import com.hotmail.dolzhik.zalup_ca.services.CommentService;
-import com.hotmail.dolzhik.zalup_ca.services.PostService;
-import com.hotmail.dolzhik.zalup_ca.services.UserService;
-import com.hotmail.dolzhik.zalup_ca.services.VoteService;
+import com.hotmail.dolzhik.zalup_ca.services.*;
 import com.hotmail.dolzhik.zalup_ca.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Configuration;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.sql.Timestamp;
@@ -32,31 +28,38 @@ public class CommentController {
     private final PostService postService;
     private final UserService userService;
     private final VoteService voteService;
+    private final ICaptchaService captchaService;
 
     @Autowired
-    public CommentController(CommentService commentService, PostService postService, UserService userService, VoteService voteService) {
+    public CommentController(CommentService commentService, PostService postService, UserService userService, VoteService voteService, ICaptchaService captchaService) {
         this.commentService = commentService;
         this.postService = postService;
         this.userService = userService;
         this.voteService = voteService;
+        this.captchaService = captchaService;
     }
 
     @PostMapping(value = "/addComment")
     ResponseEntity addComment(@Valid @RequestBody CommentDto commentDto, Principal principal){
-        User user = userService.findByLogin(principal.getName());
-        Post post = postService.findPostById(commentDto.getPostId());
 
-        if(post!=null){
-            Comment comment = new Comment();
-            comment.setText(commentDto.getText());
-            comment.setCreated(new Timestamp(new Date().getTime()));
-            comment.setUser(user);
-            comment.setPost(post);
-            commentService.addComment(comment);
-            return new ResponseEntity<>(new ZalupcaResponse("Comment has been added."), HttpStatus.OK);
+        if(captchaService.isValid(commentDto.getToken(),"addComment")) {
+            User user = userService.findByLogin(principal.getName());
+            Post post = postService.findPostById(commentDto.getPostId());
+
+            if (post != null) {
+                Comment comment = new Comment();
+                comment.setText(commentDto.getText());
+                comment.setCreated(new Timestamp(new Date().getTime()));
+                comment.setUser(user);
+                comment.setPost(post);
+                commentService.addComment(comment);
+                return new ResponseEntity<>(new ZalupcaResponse("Comment has been added."), HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(new ZalupcaResponse("Comment has not been added."), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(new ZalupcaResponse("Comment has not been added."), HttpStatus.OK);
+        return new ResponseEntity<>(new ZalupcaResponse("Captcha is invalid."), HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(value = "/upVote/{id}")

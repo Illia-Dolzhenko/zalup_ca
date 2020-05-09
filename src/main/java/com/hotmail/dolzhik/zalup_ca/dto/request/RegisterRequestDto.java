@@ -1,12 +1,14 @@
-package com.hotmail.dolzhik.zalup_ca.dto;
+package com.hotmail.dolzhik.zalup_ca.dto.request;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class RegisterRequestDto {
+public class RegisterRequestDto extends CaptchaToken {
     @NotNull(message = "Login cannot be empty.")
     @Size(min = 5, message = "Login must not be less then 5 characters.")
     private String login;
