@@ -2,6 +2,7 @@ package com.hotmail.dolzhik.zalup_ca.controllers;
 
 import com.hotmail.dolzhik.zalup_ca.dto.CreatePostDto;
 import com.hotmail.dolzhik.zalup_ca.dto.ZalupcaResponse;
+import com.hotmail.dolzhik.zalup_ca.dto.request.DeletePostRequest;
 import com.hotmail.dolzhik.zalup_ca.entities.Post;
 import com.hotmail.dolzhik.zalup_ca.entities.User;
 import com.hotmail.dolzhik.zalup_ca.services.ICaptchaService;
@@ -59,6 +60,12 @@ public class PostController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getMyPosts")
+    ResponseEntity getMyPosts(Principal principal) {
+        String currentUser = principal.getName();
+        return new ResponseEntity<>(postService.findPostsByUserLogin(currentUser),HttpStatus.OK);
+    }
+
     @GetMapping(value = "/getPost/{id}")
     ResponseEntity getPost(@PathVariable(name = "id") Integer id) {
         Post post = postService.findPostById(id);
@@ -66,6 +73,18 @@ public class PostController {
             return new ResponseEntity<>(post, HttpStatus.OK);
         }
         return new ResponseEntity<>(new ZalupcaResponse("Post with id: " + id + " does not exist."), HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping(value = "/deletePost")
+    ResponseEntity deletePost(@RequestBody @Valid DeletePostRequest request, Principal principal){
+        Post postToDelete = postService.findPostById(request.getPostId());
+
+        if(postToDelete.getUser().getLogin().equals(principal.getName())){
+            postService.deletePost(postToDelete);
+            return new ResponseEntity<>(new ZalupcaResponse("Post has been deleted."),HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ZalupcaResponse("Wrong post id."),HttpStatus.BAD_REQUEST);
     }
 
 }

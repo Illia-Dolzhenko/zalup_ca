@@ -38,21 +38,26 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public Post findPostByUserId(Integer id) {
-        return postRepository.findPostByUser_Id(id);
-    }
-
-    @Override
-    public Post findPostByUserLogin(String login) {
-        return postRepository.findPostByUser_Login(login);
-    }
+//    @Override
+//    public Post findPostByUserId(Integer id) {
+//        return postRepository.findPostByUser_Id(id);
+//    }
+//
+//    @Override
+//    public Post findPostByUserLogin(String login) {
+//        return postRepository.findPostByUser_Login(login);
+//    }
 
     @Override
     public List<Post> findAllPosts() {
         List<Post> posts = new ArrayList<>();
         postRepository.findAll().forEach(posts::add);
         return posts;
+    }
+
+    @Override
+    public List<Post> findPostsByUserLogin(String login) {
+        return postRepository.findPostsByUserLogin(login);
     }
 
 }

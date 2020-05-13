@@ -8,7 +8,8 @@ public interface PostService {
     Post createPost(Post post);
     void deletePost(Post post);
     Post findPostById(Integer id);
-    Post findPostByUserId(Integer id);
-    Post findPostByUserLogin(String login);
+//    Post findPostByUserId(Integer id);
+//    Post findPostByUserLogin(String login);
     List<Post> findAllPosts();
+    List<Post> findPostsByUserLogin(String login);
 }
